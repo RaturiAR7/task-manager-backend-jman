@@ -1,0 +1,13 @@
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  status      ProjectStatus @default(ONGOING)
+  createdAt   DateTime      @default(now())
+
+  createdBy   String
+  creator     User @relation("ProjectCreator", fields: [createdBy], references: [id])
+
+  members     ProjectMember[]
+  tasks       Task[]
+}

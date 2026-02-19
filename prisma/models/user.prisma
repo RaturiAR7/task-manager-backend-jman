@@ -1,0 +1,13 @@
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+
+  projectsCreated Project[] @relation("ProjectCreator")
+  tasksCreated    Task[]    @relation("TaskCreator")
+  tasksAssigned   Task[]    @relation("TaskAssignee")
+  projectMembers  ProjectMember[]
+}
