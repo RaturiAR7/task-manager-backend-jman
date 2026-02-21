@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 interface JwtPayload {
-  userId: number;
+  userId: string;
 }
 
 export const register = async (
@@ -43,9 +43,9 @@ export const register = async (
       name: user.name,
       email: user.email,
     });
-  } catch (error) {
+  } catch (error:any) {
     return res.status(500).json({
-      message: "Server error",
+      message: error.message,
     });
   }
 };
@@ -74,13 +74,24 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       });
     }
 
-    const token = jwt.sign(
-      { userId: user.id } as JwtPayload,
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1d" },
-    );
+ const token = jwt.sign(
+  { userId: user.id} as JwtPayload,
+  process.env.JWT_SECRET!,
+  { expiresIn: "1d" }
+);
 
     return res.json({ token });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const users = await prisma.user.findMany();
+    return res.json(users);
   } catch (error) {
     return res.status(500).json({
       message: "Server error",
