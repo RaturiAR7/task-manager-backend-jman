@@ -14,9 +14,12 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running 🚀" });
 });
 
-const userRoutes = require("./routes/user.route");
+const userRoutes = require("./routes/user.routes");
+const projectRoutes=require("./routes/project.routes");
 
 app.use("/user", userRoutes);
+app.use("/projects",projectRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
