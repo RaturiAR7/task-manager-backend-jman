@@ -38,3 +38,25 @@ export const createProject = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getMyProjects = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const projects = await prisma.projectMember.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    res.json(projects.map((p) => p.project));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};

@@ -1,10 +1,19 @@
-import { createProject } from "../controllers/project.controller";
+import {
+  createProject,
+  getMyProjects,
+} from "../controllers/project.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/role.middleware";
 
 const express = require("express");
 const router = express.Router();
 
-router.post("/",authMiddleware,authorize(["ADMIN","MANAGER"]),createProject);
+router.get("/", authMiddleware, getMyProjects);
+router.post(
+  "/",
+  authMiddleware,
+  authorize(["ADMIN", "MANAGER"]),
+  createProject,
+);
 
-module.exports=router;
+module.exports = router;
