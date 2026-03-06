@@ -1,4 +1,5 @@
 import {
+  addProjectMember,
   createProject,
   getMyProjects,
 } from "../controllers/project.controller";
@@ -14,6 +15,13 @@ router.post(
   authMiddleware,
   authorize(["ADMIN", "MANAGER"]),
   createProject,
+);
+
+router.post(
+  "/:projectId/members",
+  authMiddleware,
+  authorize(["ADMIN", "MANAGER"]),
+  addProjectMember,
 );
 
 module.exports = router;
