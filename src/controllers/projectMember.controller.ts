@@ -139,3 +139,52 @@ export const removeProjectMember = async (
     });
   }
 };
+interface GetMembersParams {
+  projectId: string;
+}
+
+export const getProjectMembers = async (
+  req: Request<GetMembersParams>,
+  res: Response,
+) => {
+  try {
+    const { projectId } = req.params;
+
+    // check if project exists
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    // fetch members
+    const members = await prisma.projectMember.findMany({
+      where: {
+        projectId: projectId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return res.json({
+      members,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
