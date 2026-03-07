@@ -1,21 +1,26 @@
 import {
-  createProject,
-  getMyProjects,
-  updateProject,
-} from "../controllers/project.controller";
+  addProjectMember,
+  removeProjectMember,
+} from "../controllers/projectMember.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/role.middleware";
 
 const express = require("express");
 const router = express.Router();
 
-router.get("/", authMiddleware, getMyProjects);
 router.post(
-  "/",
+  "/:projectId/members",
   authMiddleware,
   authorize(["ADMIN", "MANAGER"]),
-  createProject,
+  addProjectMember,
 );
-router.patch("/:projectId", authMiddleware, updateProject);
+
+router.delete(
+  "/:projectId/members/:userId",
+  authMiddleware,
+  authorize(["ADMIN", "MANAGER"]),
+  removeProjectMember,
+);
+
 
 module.exports = router;
