@@ -20,7 +20,7 @@ const projectMemberRoutes = require("./routes/projectMember.routes");
 
 app.use("/user", userRoutes);
 app.use("/projects", projectRoutes);
-app.use("/projectMembers", projectMemberRoutes);
+app.use("/projects", projectMemberRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
