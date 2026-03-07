@@ -115,3 +115,48 @@ export const updateProject = async (
     });
   }
 };
+
+interface DeleteProjectParams {
+  projectId: string;
+}
+
+export const deleteProject = async (
+  req: Request<DeleteProjectParams>,
+  res: Response,
+) => {
+  try {
+    const { projectId } = req.params;
+
+    // Check if project exists
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    if (project.createdBy !== (req as any).user.id) {
+      return res.status(403).json({
+        message: "You are not allowed to delete this project",
+      });
+    }
+
+    // Delete project
+    await prisma.project.delete({
+      where: { id: projectId },
+    });
+
+    return res.json({
+      message: "Project deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};

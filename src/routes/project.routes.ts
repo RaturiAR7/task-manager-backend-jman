@@ -1,5 +1,6 @@
 import {
   createProject,
+  deleteProject,
   getMyProjects,
   updateProject,
 } from "../controllers/project.controller";
@@ -17,5 +18,6 @@ router.post(
   createProject,
 );
 router.patch("/:projectId", authMiddleware, updateProject);
+router.delete("/:projectId", authMiddleware, deleteProject);
 
 module.exports = router;
