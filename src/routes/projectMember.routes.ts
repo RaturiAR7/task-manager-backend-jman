@@ -1,5 +1,6 @@
 import {
   addProjectMember,
+  getProjectMembers,
   removeProjectMember,
 } from "../controllers/projectMember.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
@@ -22,5 +23,6 @@ router.delete(
   removeProjectMember,
 );
 
+router.get("/:projectId/members", authMiddleware, getProjectMembers);
 
 module.exports = router;
