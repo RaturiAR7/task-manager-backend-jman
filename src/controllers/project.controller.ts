@@ -88,6 +88,11 @@ export const updateProject = async (
         message: "Project not found",
       });
     }
+    if (existingProject.createdBy !== (req as any).user.id) {
+      return res.status(403).json({
+        message: "Not authorized to update this project",
+      });
+    }
 
     // Update project
     const updatedProject = await prisma.project.update({
