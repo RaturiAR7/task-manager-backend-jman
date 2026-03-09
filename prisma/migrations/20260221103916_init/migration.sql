@@ -30,7 +30,6 @@ CREATE TABLE "Project" (
     "status" "ProjectStatus" NOT NULL DEFAULT 'ONGOING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" TEXT NOT NULL,
-
     CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );
 
@@ -45,7 +44,6 @@ CREATE TABLE "Task" (
     "projectId" TEXT NOT NULL,
     "createdBy" TEXT NOT NULL,
     "assignedTo" TEXT NOT NULL,
-
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
 
