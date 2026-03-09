@@ -26,6 +26,7 @@ enum Role {
 }
 
 enum ProjectStatus {
+  UPCOMING
   ONGOING
   COMPLETED
 }
@@ -71,7 +72,7 @@ model Project {
   id          String        @id @default(uuid())
   name        String
   description String?
-  status      ProjectStatus @default(ONGOING)
+  status      ProjectStatus @default(UPCOMING)
   createdAt   DateTime      @default(now())
 
   // Creator
@@ -105,9 +106,9 @@ model Task {
   createdBy String
   creator   User   @relation("TaskCreator", fields: [createdBy], references: [id], onDelete: Cascade)
 
-  // Assignee relation
-  assignedTo String
-  assignee   User   @relation("TaskAssignee", fields: [assignedTo], references: [id], onDelete: Cascade)
+  // Assignee relation (optional)
+  assignedTo String?
+  assignee   User?   @relation("TaskAssignee", fields: [assignedTo], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([createdBy])

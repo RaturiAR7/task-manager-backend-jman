@@ -17,10 +17,12 @@ app.get("/", (req, res) => {
 const userRoutes = require("./routes/user.routes");
 const projectRoutes = require("./routes/project.routes");
 const projectMemberRoutes = require("./routes/projectMember.routes");
+const taskRoutes = require("./routes/task.routes");
 
 app.use("/user", userRoutes);
-app.use("/projects", projectRoutes);
+app.use("/projects", taskRoutes);
 app.use("/projects", projectMemberRoutes);
+app.use("/projects", projectRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

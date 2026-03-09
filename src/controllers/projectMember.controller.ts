@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../utils/prisma";
 
-interface Params {
+export interface Params {
   projectId: string;
 }
 
@@ -177,9 +177,7 @@ export const getProjectMembers = async (
       },
     });
 
-    return res.json({
-      members,
-    });
+    return res.json(members);
   } catch (error) {
     console.error(error);
 

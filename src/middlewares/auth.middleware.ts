@@ -17,8 +17,14 @@ export const authMiddleware = (
 
   try {
     const secret = process.env.JWT_SECRET!;
-    const decoded = jwt.verify(token, secret) as JwtPayload;
-    (req as any).user = { id: decoded.userId, role: decoded.role };
+    const decoded = jwt.verify(token, secret) as any;
+    
+    const userId = decoded.userId || decoded.id;
+    if (!userId) {
+       return res.status(401).json({ message: "Token payload missing user ID" });
+    }
+
+    (req as any).user = { id: userId, role: decoded.role };
     next();
   } catch (err) {
     return res.status(401).json({ message: "Token is not valid" });

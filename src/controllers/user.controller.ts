@@ -102,3 +102,54 @@ export const getAllUsers = async (
     });
   }
 };
+
+// Returns only safe user fields — accessible to any authenticated user
+export const getBasicUsers = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+    return res.json(users);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+// Returns the currently authenticated user's profile
+export const getMe = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  try {
+    const userId = (req as any).user.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json(user);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};

@@ -2,6 +2,7 @@ import {
   createProject,
   deleteProject,
   getMyProjects,
+  getProject,
   updateProject,
 } from "../controllers/project.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
@@ -19,5 +20,6 @@ router.post(
 );
 router.patch("/:projectId", authMiddleware, updateProject);
 router.delete("/:projectId", authMiddleware, deleteProject);
+router.get("/:projectId", authMiddleware, getProject);
 
 module.exports = router;

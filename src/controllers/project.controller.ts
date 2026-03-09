@@ -4,7 +4,7 @@ import prisma from "../utils/prisma";
 export const createProject = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
-    const { name, description } = req.body;
+    const { name, description, memberIds = [] } = req.body;
 
     if (!name) {
       return res.status(400).json({
@@ -20,11 +20,15 @@ export const createProject = async (req: Request, res: Response) => {
       },
     });
 
-    await prisma.projectMember.create({
-      data: {
+    // Ensure creator is always a member and avoid duplicates
+    const membersToCreate = Array.from(new Set([userId, ...memberIds]));
+
+    await prisma.projectMember.createMany({
+      data: membersToCreate.map((id) => ({
         projectId: project.id,
-        userId,
-      },
+        userId: id as string,
+      })),
+      skipDuplicates: true,
     });
 
     return res.status(201).json({
@@ -54,10 +58,12 @@ export const getMyProjects = async (req: Request, res: Response) => {
     });
 
     res.json(projects.map((p) => p.project));
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res.status(500).json({
       message: "Server error",
+      error: error.message,
+      stack: error.stack
     });
   }
 };
@@ -160,6 +166,49 @@ export const deleteProject = async (
   } catch (error) {
     console.error(error);
 
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+interface UpdateProjectParams {
+  projectId: string;
+}
+
+export const getProject = async (
+  req: Request<UpdateProjectParams>,
+  res: Response
+) => {
+  try {
+    const { projectId } = req.params;
+
+    const existingProject = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true, 
+          },
+        },
+      },
+    });
+
+    if (!existingProject) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    return res.json({
+      message: "Project retrieved successfully",
+      project: existingProject,
+    });
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({
       message: "Server error",
     });
