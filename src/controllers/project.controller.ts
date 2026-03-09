@@ -66,9 +66,12 @@ interface UpdateProjectParams {
   projectId: string;
 }
 
+
+
 interface UpdateProjectBody {
   name?: string;
   description?: string;
+  status?: string;
 }
 
 export const updateProject = async (
@@ -77,7 +80,7 @@ export const updateProject = async (
 ) => {
   try {
     const { projectId } = req.params;
-    const { name, description } = req.body;
+    const { name, description, status } = req.body;
 
     // Check if project exists
     const existingProject = await prisma.project.findUnique({
@@ -95,13 +98,14 @@ export const updateProject = async (
       });
     }
 
-    // Update project
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (status !== undefined) updateData.status = status;
+
     const updatedProject = await prisma.project.update({
       where: { id: projectId },
-      data: {
-        name,
-        description,
-      },
+      data: updateData,
     });
 
     return res.json({
