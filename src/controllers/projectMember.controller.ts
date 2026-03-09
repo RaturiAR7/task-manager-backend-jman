@@ -177,9 +177,7 @@ export const getProjectMembers = async (
       },
     });
 
-    return res.json({
-      members,
-    });
+    return res.json(members);
   } catch (error) {
     console.error(error);
 
