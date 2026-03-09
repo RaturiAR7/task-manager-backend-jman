@@ -43,7 +43,7 @@ export const register = async (
       name: user.name,
       email: user.email,
     });
-  } catch (error:any) {
+  } catch (error: any) {
     return res.status(500).json({
       message: error.message,
     });
@@ -60,6 +60,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     const user = await prisma.user.findUnique({
       where: { email },
     });
+    console.log(user);
     if (!user) {
       return res.status(400).json({
         message: "Invalid credentials",
@@ -74,11 +75,11 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       });
     }
 
- const token = jwt.sign(
-  { userId: user.id} as JwtPayload,
-  process.env.JWT_SECRET!,
-  { expiresIn: "1d" }
-);
+    const token = jwt.sign(
+      { userId: user.id, role: user.role } as JwtPayload,
+      process.env.JWT_SECRET!,
+      { expiresIn: "1d" },
+    );
 
     return res.json({ token });
   } catch (error) {
@@ -88,7 +89,10 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-export const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
   try {
     const users = await prisma.user.findMany();
     return res.json(users);
