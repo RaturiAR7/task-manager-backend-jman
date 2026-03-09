@@ -127,3 +127,25 @@ export const getMe = async (req: Request, res: Response): Promise<Response> => {
     });
   }
 };
+
+// Returns only safe user fields — accessible to any authenticated user
+export const getBasicUsers = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+    return res.json(users);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};

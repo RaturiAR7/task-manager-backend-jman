@@ -1,4 +1,4 @@
-import { getAllUsers, login, register } from "../controllers/user.controller";
+import { getAllUsers, getBasicUsers, getMe, login, register } from "../controllers/user.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/role.middleware";
 
@@ -9,5 +9,6 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/getAllUsers",authMiddleware,authorize(["ADMIN"]), getAllUsers);
 router.get("/me", authMiddleware, getMe);
+router.get("/users", authMiddleware, getBasicUsers);
 
 module.exports = router;
