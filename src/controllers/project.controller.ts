@@ -161,3 +161,45 @@ export const deleteProject = async (
     });
   }
 };
+
+interface GetProjectParams {
+  projectId: string;
+}
+
+export const getProject = async (
+  req: Request<GetProjectParams>,
+  res: Response,
+) => {
+  try {
+    const { projectId } = req.params;
+
+    const existingProject = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (!existingProject) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    return res.json({
+      message: "Project retrieved successfully",
+      project: existingProject,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};

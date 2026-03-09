@@ -3,6 +3,7 @@ import {
   deleteProject,
   getMyProjects,
   updateProject,
+  getProject,
 } from "../controllers/project.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/role.middleware";
@@ -17,6 +18,8 @@ router.post(
   authorize(["ADMIN", "MANAGER"]),
   createProject,
 );
+
+router.get("/:projectId", authMiddleware, getProject);
 router.patch("/:projectId", authMiddleware, updateProject);
 router.delete("/:projectId", authMiddleware, deleteProject);
 
