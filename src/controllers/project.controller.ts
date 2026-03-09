@@ -42,6 +42,7 @@ export const createProject = async (req: Request, res: Response) => {
 export const getMyProjects = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
+    console.log((req as any).user.role);
 
     const projects = await prisma.projectMember.findMany({
       where: {
