@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../utils/prisma";
 
-interface Params {
+export interface Params {
   projectId: string;
 }
 
