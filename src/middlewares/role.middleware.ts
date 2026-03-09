@@ -3,7 +3,7 @@ import prisma from "../utils/prisma";
 export const authorize = (allowedRoles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const user = (req as any).user;
-    const userInDb=await prisma.user.findUnique({where:{id:user.id}});
+    const userInDb = await prisma.user.findUnique({ where: { id: user.id } });
 
     if (!userInDb) {
       return res.status(401).json({ message: "Authentication required" });
