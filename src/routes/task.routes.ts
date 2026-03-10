@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/:projectId/tasks", authMiddleware, authorize(["ADMIN", "MANAGER"]), createTask);
-router.get("/:projectId/tasks", authMiddleware, authorize(["ADMIN", "MANAGER"]), getAllTasks);
+router.get("/:projectId/tasks", authMiddleware, getAllTasks);
 router.get("/tasks", authMiddleware, authorize(["EMPLOYEE", "MANAGER", "ADMIN"]), getMyTasks);
 // Fixed: authorize must come BEFORE the controller handler, not after
 router.patch("/tasks/:taskId", authMiddleware, authorize(["EMPLOYEE", "MANAGER", "ADMIN"]), updateTask);

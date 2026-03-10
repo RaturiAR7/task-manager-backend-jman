@@ -1,34 +1,83 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id              String          @id @default(uuid())
+  name            String
+  email           String          @unique
+  password        String
+  role            Role            @default(EMPLOYEE)
+  createdAt       DateTime        @default(now())
+  projectsCreated Project[]       @relation("ProjectCreator")
+  projectMembers  ProjectMember[]
+  tasksAssigned   Task[]          @relation("TaskAssignee")
+  tasksCreated    Task[]          @relation("TaskCreator")
+
+  @@index([email])
 }
 
-///////////////////////
-// ENUMS
-///////////////////////
+model Project {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  status      ProjectStatus   @default(UPCOMING)
+  createdAt   DateTime        @default(now())
+  createdBy   String
+  creator     User            @relation("ProjectCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  members     ProjectMember[]
+  tasks       Task[]
+
+  @@index([createdBy])
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  createdAt   DateTime   @default(now())
+  projectId   String
+  createdBy   String
+  assignedTo  String?
+  assignee    User?      @relation("TaskAssignee", fields: [assignedTo], references: [id])
+  creator     User       @relation("TaskCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([createdBy])
+  @@index([assignedTo])
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  userId    String
+  joinedAt  DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
 
 enum Role {
-  ADMIN
-  MANAGER
   EMPLOYEE
+  MANAGER
+  ADMIN
 }
 
 enum ProjectStatus {
-  UPCOMING
   ONGOING
   COMPLETED
+  UPCOMING
 }
 
 enum TaskStatus {
@@ -41,94 +90,4 @@ enum Priority {
   LOW
   MEDIUM
   HIGH
-}
-
-///////////////////////
-// USER MODEL
-///////////////////////
-
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(EMPLOYEE)
-  createdAt DateTime @default(now())
-
-  // Relations
-  projectsCreated Project[]       @relation("ProjectCreator")
-  tasksCreated    Task[]          @relation("TaskCreator")
-  tasksAssigned   Task[]          @relation("TaskAssignee")
-  projectMembers  ProjectMember[]
-
-  @@index([email])
-}
-
-///////////////////////
-// PROJECT MODEL
-///////////////////////
-
-model Project {
-  id          String        @id @default(uuid())
-  name        String
-  description String?
-  status      ProjectStatus @default(UPCOMING)
-  createdAt   DateTime      @default(now())
-
-  // Creator
-  createdBy String
-  creator   User   @relation("ProjectCreator", fields: [createdBy], references: [id], onDelete: Cascade)
-
-  // Relations
-  members ProjectMember[]
-  tasks   Task[]
-
-  @@index([createdBy])
-}
-
-///////////////////////
-// TASK MODEL
-///////////////////////
-
-model Task {
-  id          String     @id @default(uuid())
-  title       String
-  description String?
-  status      TaskStatus @default(TODO)
-  priority    Priority   @default(MEDIUM)
-  createdAt   DateTime   @default(now())
-
-  // Project relation
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  // Creator relation
-  createdBy String
-  creator   User   @relation("TaskCreator", fields: [createdBy], references: [id], onDelete: Cascade)
-
-  // Assignee relation (optional)
-  assignedTo String?
-  assignee   User?   @relation("TaskAssignee", fields: [assignedTo], references: [id], onDelete: SetNull)
-
-  @@index([projectId])
-  @@index([createdBy])
-  @@index([assignedTo])
-}
-
-/////////////////////////////
-// PROJECT MEMBER (JOIN TABLE)
-/////////////////////////////
-
-model ProjectMember {
-  id        String   @id @default(uuid())
-  projectId String
-  userId    String
-  joinedAt  DateTime @default(now())
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([projectId, userId])
-  @@index([projectId])
-  @@index([userId])
 }
