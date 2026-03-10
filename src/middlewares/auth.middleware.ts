@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-interface JwtPayload {
-  userId: string;
-  role: string;
-}
-
 export const authMiddleware = (
   req: Request,
   res: Response,
@@ -23,7 +18,6 @@ export const authMiddleware = (
     if (!userId) {
        return res.status(401).json({ message: "Token payload missing user ID" });
     }
-
     (req as any).user = { id: userId, role: decoded.role };
     next();
   } catch (err) {
